@@ -1,0 +1,8 @@
+# Real config with credentials
+config/facebook_ads.ini
+
+# Output files
+scripts/*_output.*
+scripts/rezultate/
+__pycache__/
+*.pyc
