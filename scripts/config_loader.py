@@ -103,13 +103,24 @@ def _load_ini(path: Path) -> configparser.ConfigParser:
     return cp
 
 
+try:
+    # Secretele vin din Windows Credential Manager (keyring) daca au fost migrate;
+    # altfel raman valorile din .ini (backward-compatible).
+    from secret_store import overlay_secrets
+except ImportError:  # secret_store optional
+    def overlay_secrets(cp, service):  # type: ignore
+        return []
+
+
 # ============================================================================
 # Google Ads / GA4
 # ============================================================================
 
 def load_google_ads() -> configparser.ConfigParser:
     path = _require("google_ads.ini", "google_ads.template.ini")
-    return _load_ini(path)
+    cp = _load_ini(path)
+    overlay_secrets(cp, "google_ads")
+    return cp
 
 
 # ============================================================================
@@ -118,7 +129,9 @@ def load_google_ads() -> configparser.ConfigParser:
 
 def load_ga4() -> configparser.ConfigParser:
     path = _require("ga4.ini", "ga4.template.ini")
-    return _load_ini(path)
+    cp = _load_ini(path)
+    overlay_secrets(cp, "ga4")
+    return cp
 
 
 # ============================================================================
@@ -136,7 +149,9 @@ def load_settings() -> configparser.ConfigParser:
 
 def load_facebook_ads() -> configparser.ConfigParser:
     path = _require("facebook_ads.ini", "facebook_ads.template.ini")
-    return _load_ini(path)
+    cp = _load_ini(path)
+    overlay_secrets(cp, "facebook_ads")
+    return cp
 
 
 # ============================================================================
